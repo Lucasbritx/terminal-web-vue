@@ -28,6 +28,11 @@ export default {
             fitAddon.fit();
 
             terminal.writeln("Bem-vindo ao Terminal! :)");
+            terminal.focus();
+
+            terminal.onData((data) => {
+                terminal.write(data);
+            });
         },
     },
 };
