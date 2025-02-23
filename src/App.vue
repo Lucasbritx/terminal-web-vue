@@ -1,23 +1,24 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 
-// create a state variable to store number of lines
 const linesText = ref([""]);
 
-const addLine = (e) => {
-  console.log(text);
-  linesText.value.push(e.target.value);
-  text = "";
+const addLine = (e: Event, index: number) => {
+  const target = e.target as HTMLInputElement;
+  linesText.value[index] = target.value;
+  linesText.value.push("");
 };
 
 </script>
 
 <template>
   <header>
-    <div class="wrapper" v-for="line in linesText">
+    <div class="wrapper" v-for="(line, index) in linesText" :key="index">
       <div class="terminal-input-container">
-        <div class="blink_me">></div>
-        <input v-model="text" @keyup.enter="addLine" value={{line.text}} />
+        <div :class="index !== linesText.length - 1 ? '' : 'blink_me'">></div>
+        <input @keyup.enter="addLine" :value="line"
+          @input="(e) => linesText[index] = (e.target as HTMLInputElement).value"
+          :disabled="index !== linesText.length - 1" />
       </div>
     </div>
   </header>
