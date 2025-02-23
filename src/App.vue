@@ -1,12 +1,25 @@
 <script setup lang="ts">
+import axios from 'axios';
 import { ref } from 'vue';
 
-const linesText = ref([""]);
+const linesText = ref([{ text: "", response: "" }]);
+const apiUrl = "localhost:3000";
 
-const addLine = (e: Event, index: number) => {
-  const target = e.target as HTMLInputElement;
-  linesText.value[index] = target.value;
-  linesText.value.push("");
+
+
+const sendCommand = async (index: number) => {
+  const command = linesText.value[index].text.trim();
+  if (!command) return;
+
+  try {
+    const response = await axios.post(apiUrl, { command });
+    linesText.value[index].response = response.data.message || "No response";
+    linesText.value.push({ text: "", response: "" });
+  } catch (error) {
+    console.error("Error sending command:", error);
+    linesText.value[index].response = "Error: Could not connect to server.";
+    linesText.value.push({ text: "", response: "" });
+  }
 };
 
 </script>
@@ -16,10 +29,10 @@ const addLine = (e: Event, index: number) => {
     <div class="wrapper" v-for="(line, index) in linesText" :key="index">
       <div class="terminal-input-container">
         <div :class="index !== linesText.length - 1 ? '' : 'blink_me'">></div>
-        <input @keyup.enter="addLine" :value="line"
-          @input="(e) => linesText[index] = (e.target as HTMLInputElement).value"
+        <input v-model="linesText[index].text" @keyup.enter="sendCommand(index)"
           :disabled="index !== linesText.length - 1" />
       </div>
+      <div v-if="line.response" class="terminal-response">{{ line.response }}</div>
     </div>
   </header>
 </template>
