@@ -3,7 +3,7 @@ import axios from 'axios';
 import { ref } from 'vue';
 
 const linesText = ref([{ text: "", response: "" }]);
-const apiUrl = "localhost:3000";
+const apiUrl = "http://localhost:3000/exec";
 
 
 
@@ -13,7 +13,7 @@ const sendCommand = async (index: number) => {
 
   try {
     const response = await axios.post(apiUrl, { command });
-    linesText.value[index].response = response.data.message || "No response";
+    linesText.value[index].response = response.data.output || "No response";
     linesText.value.push({ text: "", response: "" });
   } catch (error) {
     console.error("Error sending command:", error);
